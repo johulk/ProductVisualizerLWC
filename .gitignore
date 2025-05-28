@@ -1,0 +1,19 @@
+# Salesforce specific
+.sf/
+.sfdx/
+
+# Common Salesforce ignores
+**/*.sfdx
+**/*.sf
+**/*.sfdxproj
+**/*.sfdxproj.local
+**/*.sfdxproj.local.bak
+**/*.sfdxproj.bak
+**/*.sfdxproj.local.json
+**/*.sfdxproj.json
+**/*.sfdxproj.local.bak.json
+**/*.sfdxproj.bak.json
+**/*.sfdxproj.local.xml
+**/*.sfdxproj.xml
+**/*.sfdxproj.local.bak.xml
+**/*.sfdxproj.bak.xml 
