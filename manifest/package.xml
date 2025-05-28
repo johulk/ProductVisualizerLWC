@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>ProductService</members>
+        <members>ProductServiceTest</members>
+        <members>ProductAPIConfigService</members>
+        <members>ProductAPIConfigServiceTest</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>productVisualizer</members>
+        <members>picklistItem</members>
+        <members>multiSelectPicklist</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <types>
+        <members>Product_Visualizer</members>
+        <name>FlexiPage</name>
+    </types>
+    <types>
+        <members>Admin</members>
+        <name>Profile</name>
+    </types>
+    <types>
+        <members>Product_Visualizer</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
+    <members>DummyJSON</members>
+    <name>RemoteSiteSetting</name>
+</types>
+<types>
+    <members>DummyJSON</members>
+    <members>DummyJSONAPI</members>
+    <name>CspTrustedSite</name>
+</types>
+    <types>
+    <members>Product2.Brand__c</members>
+    <members>Product2.DiscountPercentage__c</members>
+    <members>Product2.ExternalId__c</members>
+    <members>Product2.Images__c</members>
+    <members>Product2.Rating__c</members>
+    <members>Product2.Stock__c</members>
+    <members>Product2.Tags__c</members>
+    <name>CustomField</name>
+</types>
+<types>
+    <members>Product_API_Config__mdt</members>
+    <name>CustomObject</name>
+</types>
+<types>
+    <members>Product_API_Config.Default</members>
+    <name>CustomMetadata</name>
+</types>
+<types>
+    <members>Product_API_Config__mdt.API_Endpoint__c</members>
+    <members>Product_API_Config__mdt.Password__c</members>
+    <members>Product_API_Config__mdt.Username__c</members>
+    <name>CustomField</name>
+</types>
+    <types>
+        <members>Product_Visualizer</members>
+        <name>CustomApplication</name>
+    </types>
+    <version>63.0</version>
+</Package>

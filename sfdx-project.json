@@ -1,0 +1,43 @@
+{
+  "packageDirectories": [
+    {
+      "path": "force-app",
+      "default": true,
+      "package": "ProductVisualizer",
+      "versionName": "Version 1.0",
+      "versionNumber": "1.0.0.NEXT"
+    },
+    {
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT",
+      "path": "force-app",
+      "default": false,
+      "package": "MyUnlockedPackage",
+      "versionDescription": ""
+    },
+    {
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT",
+      "path": "force-app",
+      "default": false,
+      "package": "MyUnlockedPackage2",
+      "versionDescription": ""
+    },
+    {
+      "versionName": "ver 0.1",
+      "versionNumber": "0.1.0.NEXT",
+      "path": "force-app",
+      "default": false,
+      "package": "MyUnlockedPackage3",
+      "versionDescription": ""
+    }
+  ],
+  "namespace": "",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "57.0",
+  "packageAliases": {
+    "MyUnlockedPackage": "0HogK0000000ANZSA2",
+    "MyUnlockedPackage2": "0HogK0000000APBSA2",
+    "MyUnlockedPackage3": "0HogK0000000AQnSAM"
+  }
+}

@@ -1,0 +1,261 @@
+<!-- Product Visualizer - Main component for displaying and managing product catalog -->
+<template>
+    <!-- Wrapper card with SLDS styling -->
+    <lightning-card title="Product Visualizer" icon-name="standard:product">
+        <div class="slds-p-around_medium slds-theme_default">
+            <!-- Shows total stock count at the top -->
+            <div class="slds-m-bottom_medium">
+                <div>
+                    <div class="slds-box slds-theme_shade slds-m-bottom_medium">
+                        <h3 class="slds-text-heading_medium">Total Stock: {totalStock}</h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shows when we need to sync products -->
+            <template if:true={showSyncMessage}>
+                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_info slds-m-bottom_medium" role="alert">
+                    <span class="slds-assistive-text">info</span>
+                    <h2>No products found. Please click "Sync Products" to load products.</h2>
+                </div>
+            </template>
+
+            <!-- Filter controls and search box -->
+            <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                <!-- Category dropdown -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                    <c-multi-select-picklist
+                        label="Categories"
+                        name="categories"
+                        options={categoryOptions}
+                        onchange={handleCategoryChange}
+                    ></c-multi-select-picklist>
+                </div>
+                <!-- Brand dropdown -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                    <c-multi-select-picklist
+                        label="Brands"
+                        name="brands"
+                        options={brandOptions}
+                        onchange={handleBrandChange}
+                    ></c-multi-select-picklist>
+                </div>
+                <!-- Search field -->
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                    <lightning-input
+                        type="search"
+                        label="Search"
+                        value={searchTerm}
+                        onchange={handleSearchChange}
+                        placeholder="Search products..."
+                    ></lightning-input>
+                </div>
+            </div>
+
+            <!-- Action buttons for sync and delete -->
+            <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                <div class="slds-col slds-size_1-of-1">
+                    <lightning-button 
+                        label="Sync Products" 
+                        onclick={handleSync} 
+                        variant="brand"
+                        disabled={isLoading}
+                        class="slds-m-right_small">
+                    </lightning-button>
+                    <lightning-button 
+                        label="Delete All Products" 
+                        onclick={handleDeleteAll} 
+                        variant="destructive"
+                        disabled={isLoading}>
+                    </lightning-button>
+                </div>
+            </div>
+
+            <!-- Sort dropdown -->
+            <div class="slds-m-bottom_small">
+                <lightning-combobox
+                    label="Sort By"
+                    value={sortByValue}
+                    options={sortOptions}
+                    onchange={handleSortChange}
+                ></lightning-combobox>
+            </div>
+
+            <!-- Main product table -->
+            <template if:true={products.length}>
+                <div class="slds-scrollable_y" style="height: 500px;">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <!-- Table headers -->
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="slds-text-title_caps" scope="col">Image</th>
+                                <th class="slds-text-title_caps" scope="col">Name</th>
+                                <th class="slds-text-title_caps" scope="col">Price</th>
+                                <th class="slds-text-title_caps" scope="col">Stock</th>
+                                <th class="slds-text-title_caps" scope="col">Brand</th>
+                                <th class="slds-text-title_caps" scope="col">Category</th>
+                            </tr>
+                        </thead>
+                        <!-- Table content -->
+                        <tbody>
+                            <!-- Product list -->
+                            <template if:true={filteredProducts.length}>
+                                <template for:each={filteredProducts} for:item="product">
+                                    <!-- Product row -->
+                                    <tr key={product.Id} data-id={product.Id} onclick={handleRowClick} class="slds-hint-parent">
+                                        <td>
+                                            <div class="slds-align_absolute-center">
+                                                <img 
+                                                    src={product.DisplayUrl} 
+                                                    alt={product.Name}
+                                                    class="product-thumbnail"
+                                                    loading="lazy"
+                                                    data-id={product.Id}
+                                                />
+                                            </div>
+                                        </td>
+                                        <td>{product.Name}</td>
+                                        <td>${product.UnitPrice}</td>
+                                        <td>{product.Stock}</td>
+                                        <td>{product.Brand}</td>
+                                        <td>{product.Family}</td>
+                                    </tr>
+                                    <!-- Expanded view -->
+                                    <template if:true={product.isExpanded}>
+                                        <tr key={product.expandedKey}>
+                                            <td colspan="6">
+                                                <div class="slds-grid slds-gutters slds-wrap">
+                                                    <!-- Image gallery -->
+                                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                                        <template if:true={product.hasImages}>
+                                                            <div class="slds-box slds-theme_default slds-m-bottom_x-small">
+                                                                <div class="slds-align_absolute-center slds-m-bottom_x-small">
+                                                                    <!-- Back button -->
+                                                                    <template if:true={product.hasMultipleImages}>
+                                                                        <button class="slds-button slds-button_icon slds-button_icon-large" data-id={product.Id} onclick={handlePrevImage} title="Previous">
+                                                                            <lightning-icon icon-name="utility:chevronleft" size="medium"></lightning-icon>
+                                                                        </button>
+                                                                    </template>
+                                                                    <!-- Main image -->
+                                                                    <img 
+                                                                        src={product.currentImage} 
+                                                                        style="width:324px;height:324px;object-fit:contain;margin:0 1rem;" 
+                                                                        alt="Product Image"
+                                                                        loading="lazy"
+                                                                        data-id={product.Id}
+                                                                    />
+                                                                    <!-- Next button -->
+                                                                    <template if:true={product.hasMultipleImages}>
+                                                                        <button class="slds-button slds-button_icon slds-button_icon-large" data-id={product.Id} onclick={handleNextImage} title="Next">
+                                                                            <lightning-icon icon-name="utility:chevronright" size="medium"></lightning-icon>
+                                                                        </button>
+                                                                    </template>
+                                                                </div>
+                                                                <!-- Image counter -->
+                                                                <div class="slds-text-align_center slds-text-body_small">
+                                                                    Image {product.imageIndex} of {product.imageCount}
+                                                                </div>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+
+                                                    <!-- Product details -->
+                                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                                        <div class="slds-box slds-theme_default">
+                                                            <!-- Product name -->
+                                                            <div class="slds-text-heading_medium slds-m-bottom_small">{product.Name}</div>
+                                                            
+                                                            <!-- Price and stock -->
+                                                            <div class="slds-grid slds-gutters slds-wrap slds-m-bottom_small">
+                                                                <div class="slds-col slds-size_1-of-2">
+                                                                    <div class="slds-text-title slds-text-color_weak">Price</div>
+                                                                    <div class="slds-text-heading_small">${product.UnitPrice}</div>
+                                                                </div>
+                                                                <div class="slds-col slds-size_1-of-2">
+                                                                    <div class="slds-text-title slds-text-color_weak">Stock</div>
+                                                                    <div class="slds-text-heading_small">{product.Stock}</div>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Brand and category -->
+                                                            <div class="slds-grid slds-gutters slds-wrap slds-m-bottom_small">
+                                                                <div class="slds-col slds-size_1-of-2">
+                                                                    <div class="slds-text-title slds-text-color_weak">Brand</div>
+                                                                    <div class="slds-text-body_regular">{product.Brand}</div>
+                                                                </div>
+                                                                <div class="slds-col slds-size_1-of-2">
+                                                                    <div class="slds-text-title slds-text-color_weak">Category</div>
+                                                                    <div class="slds-text-body_regular">{product.Family}</div>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Description -->
+                                                            <div class="slds-m-bottom_small">
+                                                                <div class="slds-text-title slds-text-color_weak slds-m-bottom_xx-small">Description</div>
+                                                                <div class="slds-text-body_regular description-text">{product.Description}</div>
+                                                            </div>
+
+                                                            <!-- Tags -->
+                                                            <div class="slds-m-bottom_small">
+                                                                <div class="slds-text-title slds-text-color_weak slds-m-bottom_xx-small">Tags</div>
+                                                                <template if:true={product.tagsArray}>
+                                                                    <template for:each={product.tagsArray} for:item="tag">
+                                                                        <lightning-badge 
+                                                                            key={tag} 
+                                                                            label={tag}
+                                                                            class="slds-m-right_x-small slds-m-bottom_xx-small">
+                                                                        </lightning-badge>
+                                                                    </template>
+                                                                </template>
+                                                                <template if:false={product.tagsArray}>
+                                                                    <lightning-badge label="No tags" class="slds-m-right_x-small"></lightning-badge>
+                                                                </template>
+                                                            </div>
+
+                                                            <!-- Rating and discount -->
+                                                            <div class="slds-grid slds-gutters slds-wrap">
+                                                                <div class="slds-col slds-size_1-of-2">
+                                                                    <div class="slds-text-title slds-text-color_weak">Rating</div>
+                                                                    <div class="slds-text-body_regular">{product.Rating}</div>
+                                                                </div>
+                                                                <div class="slds-col slds-size_1-of-2">
+                                                                    <div class="slds-text-title slds-text-color_weak">Discount</div>
+                                                                    <div class="slds-text-body_regular">{product.DiscountPercentage}%</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </template>
+                            </template>
+                            <!-- No results message -->
+                            <template if:true={showNoFilteredProductsMessage}>
+                                <tr>
+                                    <td colspan="6" class="slds-text-align_center">
+                                        No products found matching your filters.
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+
+            <!-- Loading spinner -->
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </template>
+
+            <!-- Error message -->
+            <template if:true={error}>
+                <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error slds-m-top_medium" role="alert">
+                    <span class="slds-assistive-text">error</span>
+                    <h2>{error.body.message}</h2>
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

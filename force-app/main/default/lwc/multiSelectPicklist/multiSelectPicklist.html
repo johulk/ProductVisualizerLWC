@@ -1,0 +1,45 @@
+<template>
+    <!-- Form element wrapper -->
+    <div class="slds-form-element">
+        <!-- Label -->
+        <label if:true={label} class="slds-form-element__label">
+            {label}
+        </label>
+        <!-- Dropdown container -->
+        <div class="slds-form-element__control">
+            <div class="slds-combobox_container">
+                <!-- Main dropdown -->
+                <div class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-picklist multi-select-combobox__dropdown">
+                    <!-- Input field -->
+                    <div class="slds-combobox_form-element slds-input-has-icon slds-input-has-icon_right" role="none">
+                        <input
+                            class="slds-combobox__input multi-select-combobox__input"
+                            aria-controls="multi-pick-list-dropdown-items"
+                            role="textbox"
+                            type="text"
+                            value={selectedItems}
+                            readonly
+                        />
+                        <!-- Dropdown icon -->
+                        <span class="slds-icon_container slds-icon-utility-down slds-input__icon slds-input__icon_right multi-select-combobox__icon">
+                            <lightning-icon
+                                icon-name="utility:down"
+                                size="xx-small"
+                                alternative-text="Click here"
+                                class="slds-icon slds-icon--selected slds-icon--x-small slds-icon-text-default">
+                            </lightning-icon>
+                        </span>
+                    </div>
+                    <!-- Options list -->
+                    <div class="slds-dropdown slds-dropdown_length-5 slds-dropdown_fluid multi-select-combobox__listbox" role="listbox">
+                        <ul class="slds-listbox slds-listbox_vertical" role="presentation">
+                            <template for:each={currentOptions} for:item="item">
+                                <c-picklist-item key={item.key} item={item} onchange={handleChange}></c-picklist-item>
+                            </template>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
